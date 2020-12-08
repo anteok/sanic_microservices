@@ -20,6 +20,7 @@ offers = Table(
     metadata,
     Column('id', String, primary_key=True, index=True),
     Column('user_id', String, ForeignKey('users.id'), nullable=False),
+    Column('title', String, nullable=False),
     Column('text', String),
     PrimaryKeyConstraint('id', name='offers_id'),
 )
