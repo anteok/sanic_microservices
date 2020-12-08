@@ -9,7 +9,7 @@ from tables import offers, users
 
 async def get_user_info_by_id(db: Database, user_id: str) -> Optional[UserFullRecord]:
     """
-    Returns user record
+    Returns user record with offers.
     """
     ofs = offers.select().alias('ofs')
     request = sql.select([
@@ -18,6 +18,7 @@ async def get_user_info_by_id(db: Database, user_id: str) -> Optional[UserFullRe
         users.c.password,
         users.c.email,
         ofs.c.id.label('offer_id'),
+        ofs.c.title,
         ofs.c.text,
     ]).select_from(users.outerjoin(ofs, and_(users.c.id == ofs.c.user_id, users.c.id == user_id)))
     raw_data = await db.fetch_all(request)

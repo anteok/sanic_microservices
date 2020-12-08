@@ -25,7 +25,7 @@ class TestQueries(BaseAsyncDatabaseTest):
         assert record.offers == []
 
         await self.test_db.execute("""
-            INSERT INTO offers (offer_id, user_id, title, text)
+            INSERT INTO offers (id, user_id, title, text)
             VALUES ('1', '1', 'test_title', 'test_text')
         """)
 
