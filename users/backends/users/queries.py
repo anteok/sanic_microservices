@@ -43,13 +43,14 @@ async def create_user(db: Database, user: RegisterUserModel) -> None:
     hashed_pass = sha256(f'{salt}{user.password}'.encode()).hexdigest()
     # email validation can be used too if we'll use correct model
     try:
-        await db.execute(users.insert().values(
-            id=str(user_id),
-            username=user.username,
-            password=hashed_pass,
-            salt=salt,
-            email=user.email
-        ))
+        async with db.transaction():
+            await db.execute(users.insert().values(
+                id=str(user_id),
+                username=user.username,
+                password=hashed_pass,
+                salt=salt,
+                email=user.email
+            ))
     except UniqueViolationError:
         raise ValueError
 
