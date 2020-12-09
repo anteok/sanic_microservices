@@ -16,3 +16,9 @@ class UserFullRecord(BaseModel):
     salt: str
     email: str
     offers: List[Optional[OfferRecord]]
+
+
+class RegisterUserModel(BaseModel):
+    username: str
+    password:str
+    email: str

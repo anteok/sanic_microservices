@@ -3,6 +3,8 @@ import os
 import bson
 import pytest
 from hashlib import sha256
+
+from bson import ObjectId
 from sanic import Sanic
 from sqlalchemy import create_engine
 
@@ -63,3 +65,22 @@ class TestUserRoutes(BaseAppTest):
             'salt': salt,
             'offers': [],
         }
+
+    async def test_post_register_user(self, test_cli):
+        response = await test_cli.post(f'/user/registry/')
+        assert response.status == 422
+        response = await test_cli.post(f'/user/registry/', json={'username': 'name', 'password': 'pass'})
+        assert response.status == 422
+
+        response = await test_cli.post(
+            uri=f'/user/registry/',
+            json={'username': 'name', 'password': 'pass', 'email': 'mail'}
+        )
+        assert response.status == 201
+
+        record = await test_cli._app.db.fetch_one("SELECT * FROM users WHERE username = 'name'")
+        assert ObjectId.is_valid(record['id'])
+        assert record['username'] == 'name'
+        assert record['salt'] == sha256(ObjectId(record['id']).binary).hexdigest()
+        assert record['password'] == sha256(f"{record['salt']}pass".encode()).hexdigest()
+        assert record['email'] == 'mail'

@@ -1,10 +1,12 @@
+from pydantic import ValidationError
 from sanic import Blueprint
 from sanic.exceptions import abort
 from sanic.request import Request
-from sanic.response import json
+from sanic.response import json, text
 
 from backends.db_.db_connector import AsyncPSQLConnector
-from backends.users.queries import get_user_info_by_id
+from backends.users.models import RegisterUserModel
+from backends.users.queries import get_user_info_by_id, create_user
 
 db = None
 users_bp = Blueprint('user_blueprint', url_prefix='/user')
@@ -29,5 +31,18 @@ async def get_user_info(request: Request,  user_id: str):
     print(request.app.db)
     record = await get_user_info_by_id(request.app.db, user_id)
     if record is None:
-        abort(404)
+        abort(404, f"No record with id {user_id}")
     return json(record.dict())
+
+
+@users_bp.route('/registry/', methods=['POST'])
+async def register_user(request: Request):
+    """
+    Registers a new user.
+    """
+    try:
+        user = RegisterUserModel(**request.json)
+        await create_user(request.app.db, user)
+        return text('OK', status=201)
+    except (ValidationError, TypeError):
+        abort(422, 'JSON validation error')
