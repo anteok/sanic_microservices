@@ -12,8 +12,8 @@ class TestQueries(BaseAsyncDatabaseTest):
         assert await get_user_info_by_id(self.test_db, '1') is None
 
         await self.test_db.execute("""
-            INSERT INTO users (id, username, password, email)
-            VALUES ('1', 'test_user', 'password', 'test_email')
+            INSERT INTO users (id, username, password, email, salt)
+            VALUES ('1', 'test_user', 'password', 'test_email', 'deadbeef')
         """)
 
         record = await get_user_info_by_id(self.test_db, '1')
@@ -22,6 +22,7 @@ class TestQueries(BaseAsyncDatabaseTest):
         assert record.username == 'test_user'
         assert record.password == 'password'
         assert record.email == 'test_email'
+        assert record.salt == 'deadbeef'
         assert record.offers == []
 
         await self.test_db.execute("""
@@ -35,6 +36,7 @@ class TestQueries(BaseAsyncDatabaseTest):
         assert record.username == 'test_user'
         assert record.password == 'password'
         assert record.email == 'test_email'
+        assert record.salt == 'deadbeef'
         assert isinstance(record.offers, list)
         assert len(record.offers) == 1
 

@@ -16,6 +16,7 @@ async def get_user_info_by_id(db: Database, user_id: str) -> Optional[UserFullRe
         users.c.id,
         users.c.username,
         users.c.password,
+        users.c.salt,
         users.c.email,
         ofs.c.id.label('offer_id'),
         ofs.c.title,

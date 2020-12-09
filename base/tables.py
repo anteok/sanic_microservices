@@ -9,9 +9,11 @@ users = Table(
     Column('id', String, primary_key=True, index=True),
     Column('username', String, nullable=False, unique=True),
     Column('password', String, nullable=False),
+    Column('salt', String, nullable=False, unique=True),
     Column('email', String, nullable=False, unique=True),
     PrimaryKeyConstraint('id', name='users_id'),
     UniqueConstraint('username', name='username_un'),
+    UniqueConstraint('salt', name='salt_un'),
     UniqueConstraint('email', name='email_un'),
 )
 

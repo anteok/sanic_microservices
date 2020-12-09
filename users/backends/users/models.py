@@ -13,5 +13,6 @@ class UserFullRecord(BaseModel):
     id: str
     username: str
     password: str
+    salt: str
     email: str
     offers: List[Optional[OfferRecord]]
