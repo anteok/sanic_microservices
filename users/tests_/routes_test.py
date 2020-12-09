@@ -1,6 +1,7 @@
 import os
 
 import bson
+import jwt
 import pytest
 from hashlib import sha256
 
@@ -32,6 +33,7 @@ class BaseAppTest:
         """
         app = Sanic(__name__)
         app.config['PSQL_URL'] = os.getenv('PSQL_TEST_URL')
+        app.config['SECRET'] = os.getenv('SECRET_KEY')
         app.blueprint(users_bp)
 
         yield app
@@ -84,3 +86,30 @@ class TestUserRoutes(BaseAppTest):
         assert record['salt'] == sha256(ObjectId(record['id']).binary).hexdigest()
         assert record['password'] == sha256(f"{record['salt']}pass".encode()).hexdigest()
         assert record['email'] == 'mail'
+
+    async def test_post_auth_user(self, test_cli):
+        response = await test_cli.post(f'/user/auth/')
+        assert response.status == 422
+        response = await test_cli.post(f'/user/auth/', json={'username': 'test_user'})
+        assert response.status == 422
+
+        user_id = str(ObjectId())
+        hashed_pass = sha256(f'deadbeefpass'.encode()).hexdigest()
+        await test_cli._app.db.execute("""
+            INSERT INTO users (id, username, password, email, salt)
+            VALUES (:id, 'test_user', :pass, 'test_email', 'deadbeef')
+        """, values={'id': user_id, 'pass': hashed_pass})
+
+        response = await test_cli.post(f'/user/auth/', json={'username': 'test_user', 'password': 'wrong'})
+        assert response.status == 401
+        response = await test_cli.post(f'/user/auth/', json={'username': 'wrong', 'password': 'pass'})
+        assert response.status == 401
+
+        response = await test_cli.post(f'/user/auth/', json={'username': 'test_user', 'password': 'pass'})
+        assert response.status == 200
+        data = await response.json()
+        assert data.get('id')
+        assert data['id'] == user_id
+        assert data.get('jwt')
+        assert jwt.decode(data['jwt'], test_cli._app.config['SECRET'], algorithms=['HS256']) == \
+               {'username': 'test_user'}

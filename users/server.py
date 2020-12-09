@@ -10,6 +10,7 @@ from backends.users.blueprint import users_bp
 app.blueprint(users_bp)
 app.blueprint(swagger_blueprint)
 app.config['PSQL_URL'] = os.getenv('PSQL_URL')
+app.config['SECRET'] = os.getenv('SECRET_KEY')
 
 
 engine = create_engine(app.config['PSQL_URL'])

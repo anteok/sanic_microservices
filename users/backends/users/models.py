@@ -20,5 +20,15 @@ class UserFullRecord(BaseModel):
 
 class RegisterUserModel(BaseModel):
     username: str
-    password:str
+    password: str
     email: str
+
+
+class AuthUserRequest(BaseModel):
+    username: str
+    password: str
+
+
+class AuthUserResponse(BaseModel):
+    id: str
+    jwt: str

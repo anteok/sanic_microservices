@@ -1,11 +1,12 @@
 from typing import Optional
 
+import jwt
 from bson import ObjectId
 from databases import Database
 from hashlib import sha256
 from sqlalchemy import sql, and_
 
-from backends.users.models import UserFullRecord, OfferRecord, RegisterUserModel
+from backends.users.models import UserFullRecord, OfferRecord, RegisterUserModel, AuthUserRequest, AuthUserResponse
 from tables import offers, users
 
 
@@ -47,3 +48,18 @@ async def create_user(db: Database, user: RegisterUserModel) -> None:
         salt=salt,
         email=user.email
     ))
+
+
+async def auth_user(db: Database, user: AuthUserRequest, secret: str) -> Optional[AuthUserResponse]:
+    """
+    Authorizes user, returns its credentials
+    """
+    user_record = await db.fetch_one(users.select().where(users.c.username == user.username))
+    if user_record is None:
+        return None
+    if sha256(f"{user_record['salt']}{user.password}".encode()).hexdigest() != user_record['password']:
+        return None
+    return AuthUserResponse(
+        id=user_record['id'],
+        jwt=jwt.encode({'username': user.username}, secret, algorithm='HS256')
+    )

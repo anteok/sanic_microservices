@@ -5,8 +5,8 @@ from sanic.request import Request
 from sanic.response import json, text
 
 from backends.db_.db_connector import AsyncPSQLConnector
-from backends.users.models import RegisterUserModel
-from backends.users.queries import get_user_info_by_id, create_user
+from backends.users.models import RegisterUserModel, AuthUserRequest
+from backends.users.queries import get_user_info_by_id, create_user, auth_user
 
 db = None
 users_bp = Blueprint('user_blueprint', url_prefix='/user')
@@ -44,5 +44,19 @@ async def register_user(request: Request):
         user = RegisterUserModel(**request.json)
         await create_user(request.app.db, user)
         return text('OK', status=201)
+    except (ValidationError, TypeError):
+        abort(422, 'JSON validation error')
+
+
+@users_bp.route('/auth/', methods=['POST'])
+async def authorize_user(request: Request):
+    """
+    Authorizes user.
+    """
+    try:
+        creds = await auth_user(request.app.db, AuthUserRequest(**request.json), request.app.config['SECRET'])
+        if creds is None:
+            abort(401, 'Wrong auth data')
+        return json(creds.dict())
     except (ValidationError, TypeError):
         abort(422, 'JSON validation error')
