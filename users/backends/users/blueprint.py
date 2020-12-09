@@ -3,13 +3,15 @@ from sanic import Blueprint
 from sanic.exceptions import abort
 from sanic.request import Request
 from sanic.response import json, text
+from sanic_openapi import doc
 
 from backends.db_.db_connector import AsyncPSQLConnector
-from backends.users.models import RegisterUserModel, AuthUserRequest
+from backends.users.models import RegisterUserModel, AuthUserRequest, swg_registration, swg_auth, \
+    SwgAuthUserResponse, SwgUserFullRecord
 from backends.users.queries import get_user_info_by_id, create_user, auth_user
 
 db = None
-users_bp = Blueprint('user_blueprint', url_prefix='/user')
+users_bp = Blueprint('Users service requests', url_prefix='/user')
 
 
 @users_bp.listener('before_server_start')
@@ -24,6 +26,9 @@ async def close_connection(app, loop):
 
 
 @users_bp.route('/<user_id:string>/')
+@doc.summary('User info')
+@doc.description('Returns user info by its id')
+@doc.produces(SwgUserFullRecord)
 async def get_user_info(request: Request,  user_id: str):
     """
     Returns user full info by its user_id.
@@ -35,6 +40,11 @@ async def get_user_info(request: Request,  user_id: str):
 
 
 @users_bp.route('/registry/', methods=['POST'])
+@doc.summary('User registration')
+@doc.consumes(swg_registration, location='body')
+@doc.description('Registers user with provided data')
+@doc.response(201, {'message': 'Successful!'}, description='OK')
+@doc.response(422, {'message': 'JSON validation error or user exists already'}, description='Unprocessable Entity')
 async def register_user(request: Request):
     """
     Registers a new user.
@@ -50,6 +60,10 @@ async def register_user(request: Request):
 
 
 @users_bp.route('/auth/', methods=['POST'])
+@doc.summary('User authorization')
+@doc.consumes(swg_auth, location='body')
+@doc.description('Authotizes user by username and password')
+@doc.produces(SwgAuthUserResponse)
 async def authorize_user(request: Request):
     """
     Authorizes user.
@@ -58,6 +72,6 @@ async def authorize_user(request: Request):
         creds = await auth_user(request.app.db, AuthUserRequest(**request.json), request.app.config['SECRET'])
         if creds is None:
             abort(401, 'Wrong auth data')
-        return json(creds.dict())
+        return json(creds.dict(), status=200)
     except (ValidationError, TypeError):
         abort(422, 'JSON validation error')
