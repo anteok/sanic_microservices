@@ -1,0 +1,153 @@
+basePath: null
+definitions:
+  SwgAuthUserResponse:
+    properties:
+      id:
+        description: User id
+        type: string
+      jwt:
+        description: JWT Token
+        type: string
+    type: object
+  SwgOfferRecord:
+    properties:
+      offer_id:
+        description: Offer id
+        type: string
+      text:
+        description: Offer text
+        type: string
+      title:
+        description: Offer title
+        type: string
+    type: object
+  SwgUserFullRecord:
+    properties:
+      email:
+        description: User email
+        type: string
+      id:
+        description: User id
+        type: string
+      offers:
+        description: Offers of current user
+        items:
+          $ref: '#/definitions/SwgOfferRecord'
+        type: array
+      password:
+        description: User's password
+        type: string
+      salt:
+        description: Cryptographic salt for saving password
+        type: string
+      username:
+        description: Name of user
+        type: string
+    type: object
+host: null
+info:
+  contact:
+    email: null
+  description: ''
+  license:
+    name: null
+    url: null
+  termsOfService: ''
+  title: API
+  version: 1.0.0
+paths:
+  /user/auth:
+    post:
+      consumes:
+      - null
+      description: Authotizes user by username and password
+      operationId: Users service requests.authorize_user
+      parameters:
+      - in: body
+        name: body
+        required: false
+        schema:
+          properties:
+            password:
+              description: Password of user account
+              type: string
+            username:
+              description: Name of user account
+              type: string
+          type: object
+      produces:
+      - null
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/SwgAuthUserResponse'
+      summary: User authorization
+      tags:
+      - Users service requests
+  /user/registry:
+    post:
+      consumes:
+      - null
+      description: Registers user with provided data
+      operationId: Users service requests.register_user
+      parameters:
+      - in: body
+        name: body
+        required: false
+        schema:
+          properties:
+            email:
+              description: User email
+              type: string
+            password:
+              description: Password of user account
+              type: string
+            username:
+              description: Name of user account
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        '201':
+          description: OK
+          schema:
+            properties:
+              message: {}
+            type: object
+        '422':
+          description: Unprocessable Entity
+          schema:
+            properties:
+              message: {}
+            type: object
+      summary: User registration
+      tags:
+      - Users service requests
+  /user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns user info by its id
+      operationId: Users service requests.get_user_info
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - null
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/SwgUserFullRecord'
+      summary: User info
+      tags:
+      - Users service requests
+schemes:
+- http
+security: null
+securityDefinitions: null
+swagger: '2.0'
+tags:
+- name: Users service requests

@@ -1,14 +1,14 @@
 import os
 
-from sanic_openapi import swagger_blueprint
 from sqlalchemy import create_engine
 
 from backends.app import app
+from backends.swagger.blueprint import swagger_bp
 from backends.users.blueprint import users_bp
 
 
 app.blueprint(users_bp)
-app.blueprint(swagger_blueprint)
+app.blueprint(swagger_bp)
 app.config['PSQL_URL'] = os.getenv('PSQL_URL')
 app.config['SECRET'] = os.getenv('SECRET_KEY')
 
