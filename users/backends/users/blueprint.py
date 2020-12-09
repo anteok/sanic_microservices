@@ -5,12 +5,12 @@ from sanic.request import Request
 from sanic.response import json, text
 from sanic_openapi import doc
 
-from backends.db_.db_connector import AsyncPSQLConnector
+from db_connector import AsyncPSQLConnector
 from backends.users.models import RegisterUserModel, AuthUserRequest, swg_registration, swg_auth, \
     SwgAuthUserResponse, SwgUserFullRecord
 from backends.users.queries import get_user_info_by_id, create_user, auth_user
 
-db = None
+
 users_bp = Blueprint('Users service requests', url_prefix='/user')
 
 

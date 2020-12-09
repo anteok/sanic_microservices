@@ -7,7 +7,7 @@ from hashlib import sha256
 
 from backends.users.models import UserFullRecord, OfferRecord, RegisterUserModel, AuthUserRequest, AuthUserResponse
 from backends.users.queries import get_user_info_by_id, create_user, auth_user
-from tests_.async_test_db import BaseAsyncDatabaseTest
+from async_test_db import BaseAsyncDatabaseTest
 
 
 class TestQueries(BaseAsyncDatabaseTest):

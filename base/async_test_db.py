@@ -6,7 +6,7 @@ from time import sleep
 import pytest
 from sqlalchemy import create_engine
 
-from backends.db_.db_connector import AsyncPSQLConnector
+from db_connector import AsyncPSQLConnector
 from tables import metadata
 
 
@@ -42,11 +42,3 @@ class BaseAsyncDatabaseTest:
         # Drop test databases
         await self.test_db.disconnect()
         metadata.drop_all(engine)
-
-    @staticmethod
-    def sync_exec(coro):
-        """
-        Function for running coroutines in sync code.
-        """
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(coro)
