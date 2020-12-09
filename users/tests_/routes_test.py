@@ -87,6 +87,12 @@ class TestUserRoutes(BaseAppTest):
         assert record['password'] == sha256(f"{record['salt']}pass".encode()).hexdigest()
         assert record['email'] == 'mail'
 
+        response = await test_cli.post(
+            uri=f'/user/registry/',
+            json={'username': 'name', 'password': 'pass', 'email': 'mail'}
+        )
+        assert response.status == 422
+
     async def test_post_auth_user(self, test_cli):
         response = await test_cli.post(f'/user/auth/')
         assert response.status == 422

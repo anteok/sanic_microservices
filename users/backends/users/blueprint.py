@@ -28,7 +28,6 @@ async def get_user_info(request: Request,  user_id: str):
     """
     Returns user full info by its user_id.
     """
-    print(request.app.db)
     record = await get_user_info_by_id(request.app.db, user_id)
     if record is None:
         abort(404, f"No record with id {user_id}")
@@ -46,6 +45,8 @@ async def register_user(request: Request):
         return text('OK', status=201)
     except (ValidationError, TypeError):
         abort(422, 'JSON validation error')
+    except ValueError:
+        abort(422, 'User already exists')
 
 
 @users_bp.route('/auth/', methods=['POST'])

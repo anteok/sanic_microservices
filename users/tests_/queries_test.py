@@ -62,6 +62,9 @@ class TestQueries(BaseAsyncDatabaseTest):
         assert record['password'] == sha256(f"{record['salt']}pass".encode()).hexdigest()
         assert record['email'] == 'mail'
 
+        with pytest.raises(ValueError):
+            await create_user(self.test_db, RegisterUserModel(username='test_user', password='pass', email='mail'))
+
     @pytest.mark.asyncio
     async def test_auth_user(self):
         assert await auth_user(

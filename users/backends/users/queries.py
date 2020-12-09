@@ -1,6 +1,7 @@
 from typing import Optional
 
 import jwt
+from asyncpg import UniqueViolationError
 from bson import ObjectId
 from databases import Database
 from hashlib import sha256
@@ -41,13 +42,16 @@ async def create_user(db: Database, user: RegisterUserModel) -> None:
     salt = sha256(user_id.binary).hexdigest()
     hashed_pass = sha256(f'{salt}{user.password}'.encode()).hexdigest()
     # email validation can be used too if we'll use correct model
-    await db.execute(users.insert().values(
-        id=str(user_id),
-        username=user.username,
-        password=hashed_pass,
-        salt=salt,
-        email=user.email
-    ))
+    try:
+        await db.execute(users.insert().values(
+            id=str(user_id),
+            username=user.username,
+            password=hashed_pass,
+            salt=salt,
+            email=user.email
+        ))
+    except UniqueViolationError:
+        raise ValueError
 
 
 async def auth_user(db: Database, user: AuthUserRequest, secret: str) -> Optional[AuthUserResponse]:
