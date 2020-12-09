@@ -16,6 +16,7 @@ users_bp = Blueprint('Users service requests', url_prefix='/user')
 
 @users_bp.listener('before_server_start')
 async def setup_connection(app, loop):
+    # There are should be a reliable connector, not that piece
     app.db = AsyncPSQLConnector(app.config['PSQL_URL']).db
     await app.db.connect()
 
