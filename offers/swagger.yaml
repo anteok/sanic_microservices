@@ -1,0 +1,100 @@
+basePath: null
+definitions:
+  SwgFullOfferRecord:
+    properties:
+      id:
+        description: Offer id
+        type: string
+      text:
+        description: Offer text
+        type: string
+      title:
+        description: Offer title
+        type: string
+      user_id:
+        description: User id
+        type: string
+    type: object
+host: null
+info:
+  contact:
+    email: null
+  description: ''
+  license:
+    name: null
+    url: null
+  termsOfService: ''
+  title: API
+  version: 1.0.0
+paths:
+  /offer:
+    post:
+      consumes:
+      - null
+      description: Returns offer data by offer_id or user_id
+      operationId: Offers service requests.get_offers
+      parameters:
+      - in: query
+        name: user_id
+        required: false
+        type: string
+      - in: query
+        name: offer_id
+        required: false
+        type: string
+      produces:
+      - null
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/SwgFullOfferRecord'
+      summary: Offers data
+      tags:
+      - Offers service requests
+  /offer/create:
+    post:
+      consumes:
+      - null
+      description: Creates offer attached to user by his id
+      operationId: Offers service requests.create_new_offer
+      parameters:
+      - in: body
+        name: body
+        required: false
+        schema:
+          properties:
+            text:
+              description: Offer text
+              type: string
+            title:
+              description: Offer title
+              type: string
+            user_id:
+              description: User id
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        '201':
+          description: OK
+          schema:
+            properties:
+              message: {}
+            type: object
+        '422':
+          description: Unprocessable Entity
+          schema:
+            properties:
+              message: {}
+            type: object
+      summary: Create an offer
+      tags:
+      - Offers service requests
+schemes:
+- http
+security: null
+securityDefinitions: null
+swagger: '2.0'
+tags:
+- name: Offers service requests
