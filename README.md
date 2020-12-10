@@ -1,7 +1,7 @@
 Running
 -
 docker-compose could be used to run all together. Environment variables from config.env must be provided for every
-service if you want to build them separately. For local build in virtual environment you may need content from base
+service if you want to build them separately. For local build in virtual environment you may need content from ./base
 directory as dependencies.
 
 Summary
@@ -9,7 +9,7 @@ Summary
 
 It seems to me I have done it :) 
 
-Things I like:
+Things I did like:
 * I had some dirty hacks in my pocket like database connector and base test class
 * I have spent plenty of time finding exploring the whole framework - there are nice points for dependency injections, 
 which are quite comfortable to use while testing
