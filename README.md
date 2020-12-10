@@ -11,7 +11,7 @@ It seems to me I have done it :)
 
 Things I did like:
 * I had some dirty hacks in my pocket like database connector and base test class
-* I have spent plenty of time finding exploring the whole framework - there are nice points for dependency injections, 
+* I have spent plenty of time exploring the whole framework - there are nice points for dependency injections, 
 which are quite comfortable to use while testing
 * Testing framework pytest-sanic is handy, but a there are some issues with pytest-asyncio collaborations:)
 
