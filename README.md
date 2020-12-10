@@ -13,7 +13,7 @@ Things I did like:
 * I had some dirty hacks in my pocket like database connector and base test class
 * I have spent plenty of time exploring the whole framework - there are nice points for dependency injections, 
 which are quite comfortable to use while testing
-* Testing framework pytest-sanic is handy, but a there are some issues with pytest-asyncio collaborations:)
+* Testing framework pytest-sanic is handy, but there are some issues with pytest-asyncio collaborations:)
 
 Things I did not like:
 * docker-compose is not working correctly on my pc because of any networking issues OR I have wrong connection way
